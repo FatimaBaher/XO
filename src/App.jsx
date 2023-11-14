@@ -3,47 +3,31 @@ import Board from "./components/Board";
 
 export default function App(){
 
-  function creatArray(){
-    let arr = [];
-    for(let i=0; i<9; i++){
-      arr.push({squareId: i, filled: false, value: '', order: null});
+  const [gameHistory, setGameHistory] = useState(new Array(new Array(9).fill("")))
+  function handleSquareClick(squareId, value){
+    if(value==''){
+        let len = gameHistory.length;
+        let currentBoard = [...gameHistory[len-1]];
+        let currentHistory = [...gameHistory];
+        if(len%2==1) currentBoard[squareId] = 'X';
+        else currentBoard[squareId] = 'O';
+        currentHistory.push(currentBoard);
+        setGameHistory(currentHistory);
     }
-    return arr;
   }
-  const [xTurn, setXTurn] = useState(true);
-  // eslint-disable-next-line no-unused-vars
-  const [order, setOrder] = useState(0);
-  const [movesBtns, setMovesBtns] = useState([]);
-  const [squaresValues, setSquaresValues] = useState(creatArray())
-
-  function moveBtnClicked(index, orderL, squareId){
-    console.log("index:", index, "squareId", squareId, "order:", orderL);
-    setSquaresValues(()=>{return squaresValues.map(element=>
-      (element.order!=null && element.order<order)? element: {squareId: element.squareId, filled: false, value: '', order:null}
-    )})
-    setOrder(orderL);
-
-    // for(let start=order+1; start<movesBtns.length; start++){
-    //   console.log("*** ", movesBtns);
-    //   console.log("start:", start, "order:", order);
-    //   let currentMoveBtn = movesBtns[start];
-    //   let tmpSquareValues = [...squaresValues]
-    //   tmpSquareValues[currentMoveBtn.squareId].filled = false;
-    //   tmpSquareValues[currentMoveBtn.squareId].value = '';
-    //   setSquaresValues(tmpSquareValues);
-    // }
-    setMovesBtns(movesBtns.slice(0, orderL+1))
+  
+  function moveBtnClicked(index){
+    setGameHistory(gameHistory.slice(0,index+1))
   }
 
   return (
     <div className="wrapper">
-      <div className="turnMsg">It is your turn {xTurn? 'X': 'O'}</div>
-      <Board xTurn={xTurn} setXTurn={setXTurn} order={order} setOrder={setOrder} movesBtns={movesBtns} setMovesBtns={setMovesBtns} squaresValues={squaresValues} setSquaresValues={setSquaresValues}/>
-      {movesBtns.map((element, index)=>{
-        return <button key={index} onClick={() => moveBtnClicked(index,element.order, element.squareId)}>Go to move {index + 1}</button>
+      <div className="turnMsg">It is your turn {gameHistory.length%2==1? 'X': 'O'}</div>
+      <Board handleSquareClick={handleSquareClick} gameHistory={gameHistory}/>
+      {gameHistory.slice(0,gameHistory.length-1).map((element, index)=>{
+        return <button key={index} onClick={() => moveBtnClicked(index)}>Go to move {index==0?"Start" :index + 1}</button>
       }
       )}
-    </div>
-    
+    </div>   
   )
 }
