@@ -3,13 +3,14 @@ import { useState } from "react";
 import Square from "./Square";
 
 // eslint-disable-next-line react/prop-types
-export default function Board({xTurn, setXTurn, movesBtns, setMovesBtns, squaresValues, setSquaresValues}) {
+export default function Board({xTurn, setXTurn, order, setOrder,  movesBtns, setMovesBtns, squaresValues, setSquaresValues}) {
     // eslint-disable-next-line no-unused-vars
-
-    const [order, setOrder] = useState(0);
+    //console.log("moveBtns is", movesBtns);
+    
     const [values, setValues] = useState(new Array(9).fill(""));
     
     function handleClick(id){
+        
         console.log("item", id, "clicked");
         let tmpValues = [...values];
         console.log("tmpValues issss", tmpValues);
@@ -17,12 +18,12 @@ export default function Board({xTurn, setXTurn, movesBtns, setMovesBtns, squares
         else tmpValues[id] = 'O';
         let tmpSquareValues = [...squaresValues];
         setSquaresValues(tmpSquareValues.map(element=>{
-            if(element.id==id){
-                return {id: id, filled: true, value: tmpValues[id]}
+            if(element.squareId==id){
+                return {squareId: id, filled: true, value: tmpValues[id], order: order}
             }else return element;
         })) 
-        setMovesBtns([...movesBtns, {order: order, squareId: id, value: tmpValues[id]}])
-        console.log("moveBtns is", movesBtns);
+        setMovesBtns(()=>[...movesBtns, {order: order, squareId: id, value: tmpValues[id]}])
+        
         setOrder(order+1);
         setXTurn(!xTurn);
         setValues(tmpValues);
@@ -31,7 +32,7 @@ export default function Board({xTurn, setXTurn, movesBtns, setMovesBtns, squares
     return (       
         <div className="board">
             {squaresValues.map((element) => (
-                <Square key={element.id} squareId={element.id} value={element.value} filled={element.filled} squareClickedHandler={()=>handleClick(element.id)}/>
+                <Square key={element.squareId} squareId={element.squareId} value={element.value} filled={element.filled} squareClickedHandler={()=>handleClick(element.squareId)}/>
             ))}
         </div>
     );
